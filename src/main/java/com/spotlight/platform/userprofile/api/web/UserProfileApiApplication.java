@@ -2,6 +2,8 @@ package com.spotlight.platform.userprofile.api.web;
 
 import com.spotlight.platform.userprofile.api.core.json.JsonMapper;
 import com.spotlight.platform.userprofile.api.model.configuration.UserProfileApiConfiguration;
+import com.spotlight.platform.userprofile.api.web.exceptionmappers.BaseBusinessExceptionMapper;
+import com.spotlight.platform.userprofile.api.web.exceptionmappers.BasePersistanceExceptionMapper;
 import com.spotlight.platform.userprofile.api.web.exceptionmappers.EntityNotFoundExceptionMapper;
 import com.spotlight.platform.userprofile.api.web.healthchecks.PreventStartupWarningHealthCheck;
 import com.spotlight.platform.userprofile.api.web.modules.UserProfileApiModule;
@@ -48,6 +50,8 @@ public class UserProfileApiApplication extends Application<UserProfileApiConfigu
 
     private void registerExceptionMappers(Environment environment) {
         environment.jersey().register(getInstance(EntityNotFoundExceptionMapper.class));
+        environment.jersey().register(getInstance(BaseBusinessExceptionMapper.class));
+        environment.jersey().register(getInstance(BasePersistanceExceptionMapper.class));
     }
 
     private <T> T getInstance(Class<T> clazz) {

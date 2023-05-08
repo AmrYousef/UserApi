@@ -3,7 +3,6 @@ package com.spotlight.platform.userprofile.api.web.resources;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-
 import com.spotlight.platform.userprofile.api.core.profile.persistence.UserProfileDao;
 import com.spotlight.platform.userprofile.api.model.profile.UserProfile;
 import com.spotlight.platform.userprofile.api.model.profile.primitives.UserId;
@@ -21,6 +20,8 @@ import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import java.util.Optional;
 
+import javax.ws.rs.client.Entity;
+
 import ru.vyarus.dropwizard.guice.test.ClientSupport;
 import ru.vyarus.dropwizard.guice.test.jupiter.ext.TestDropwizardAppExtension;
 
@@ -33,6 +34,7 @@ import static org.mockito.Mockito.when;
 
 @Execution(ExecutionMode.SAME_THREAD)
 class UserResourceIntegrationTest {
+
     @RegisterExtension
     static TestDropwizardAppExtension APP = TestDropwizardAppExtension.forApp(UserProfileApiApplication.class)
             .randomPorts()
@@ -56,6 +58,7 @@ class UserResourceIntegrationTest {
     class GetUserProfile {
         private static final String USER_ID_PATH_PARAM = "userId";
         private static final String URL = "/users/{%s}/profile".formatted(USER_ID_PATH_PARAM);
+        private static final String APPLY_COMMAND_URL = "/users".formatted(USER_ID_PATH_PARAM);
 
         @Test
         void existingUser_correctObjectIsReturned(ClientSupport client, UserProfileDao userProfileDao) {
@@ -94,6 +97,20 @@ class UserResourceIntegrationTest {
             var response = client.targetRest().path(URL).resolveTemplate(USER_ID_PATH_PARAM, UserProfileFixtures.USER_ID).request().get();
 
             assertThat(response.getStatus()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR_500);
+        }
+
+        @Test
+        void applyCommand_OnExceptption_returns400(ClientSupport client) {
+            var response = client.targetRest().path(APPLY_COMMAND_URL).request().post(Entity.json(UserProfileFixtures.TEST_COMMAND));
+
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
+        }
+
+        @Test
+        void applyCommand_OnWrongCommandTypeExceptption_returns400(ClientSupport client) {
+            var response = client.targetRest().path(APPLY_COMMAND_URL).request().post(Entity.json(UserProfileFixtures.WRONG_TEST_COMMAND));
+
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST_400);
         }
     }
 }

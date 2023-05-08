@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import com.spotlight.platform.userprofile.api.core.exceptions.business.EntityNotFoundException;
+import com.spotlight.platform.userprofile.api.core.exceptions.business.BaseBusinessException;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -18,12 +18,12 @@ import io.dropwizard.testing.junit5.ResourceExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
-class EntityNotFoundExceptionMapperTest {
+class BaseBusinessExceptionMapperTest {
 
     private static final ResourceExtension EXT = ResourceExtension.builder()
             .addResource(new MockResource())
             .setRegisterDefaultExceptionMappers(false)
-            .addProvider(new EntityNotFoundExceptionMapper())
+            .addProvider(new BaseBusinessExceptionMapper())
             .build();
 
     private Client client;
@@ -34,22 +34,22 @@ class EntityNotFoundExceptionMapperTest {
     }
 
     @Test
-    void entityNotFound_ResultsIn404() {
+    void BaseBusiness_ResultsIn404() {
         Response response = client.target(MockResource.RESOURCE_URLS.THROW_EXCEPTION).request().post(Entity.json("{}"));
 
-        assertThat(response.getStatus()).isEqualTo(Response.Status.NOT_FOUND.getStatusCode());
+        assertThat(response.getStatus()).isEqualTo(Response.Status.BAD_REQUEST.getStatusCode());
     }
 
     @Path("/")
     public static class MockResource {
         public static class RESOURCE_URLS {
-            public static final String THROW_EXCEPTION = "/throwEntityNotFoundException";
+            public static final String THROW_EXCEPTION = "/throwBaseBusinessException";
         }
 
         @POST
         @Path(RESOURCE_URLS.THROW_EXCEPTION)
         public void throwException() {
-            throw new EntityNotFoundException();
+            throw new BaseBusinessException("msg");
         }
     }
 }

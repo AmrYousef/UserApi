@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface UserProfileDao {
     Optional<UserProfile> get(UserId userId);
 
-    void put(UserProfile userProfile);
+    void addUpdate(UserProfile userProfile);
 }

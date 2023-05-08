@@ -1,5 +1,7 @@
 package com.spotlight.platform.userprofile.api.model.profile.primitives;
 
+import java.util.ArrayList;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
@@ -32,6 +34,37 @@ public class UserProfilePropertyValue {
             return false;
         }
         return value.equals(((UserProfilePropertyValue) obj).getValue());
+    }
+
+    public boolean IsInt() {
+        return value instanceof Integer;
+    }
+
+    public static UserProfilePropertyValue Increment(UserProfilePropertyValue propertyValue, 
+    UserProfilePropertyValue increment) {
+        var newValue = (int)propertyValue.value + (int)increment.value;
+        return new UserProfilePropertyValue(newValue);
+    }
+
+    public boolean IsArrayList() {
+        return value instanceof ArrayList<?>;
+    }
+
+    public static UserProfilePropertyValue MergeLists(UserProfilePropertyValue propertyValue, 
+    UserProfilePropertyValue increment) {
+        var updatedProperty = new ArrayList<Object>();
+
+        if(propertyValue.value instanceof ArrayList)
+            updatedProperty.addAll((ArrayList<?>)propertyValue.value);
+        else
+            updatedProperty.add(propertyValue.value);
+
+        if(increment.value instanceof ArrayList)
+            updatedProperty.addAll((ArrayList<?>)increment.value);
+        else
+            updatedProperty.add(increment.value);
+
+        return new UserProfilePropertyValue(updatedProperty);
     }
 }
 

@@ -2,6 +2,7 @@ package com.spotlight.platform.userprofile.api.model.profile.primitives;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static net.javacrumbs.jsonunit.assertj.JsonAssertions.assertThatJson;
@@ -24,5 +25,17 @@ class UserProfilePropertyValueTest {
         assertThatJson(UserProfilePropertyValue.valueOf(STRING_VALUE)).isEqualTo("someString");
         assertThatJson(UserProfilePropertyValue.valueOf(INTEGER_VALUE)).isEqualTo("5");
         assertThatJson(UserProfilePropertyValue.valueOf(LIST_VALUE)).isEqualTo("[\"one\",\"two\"]");
+    }
+
+    @Test
+    void serialization_ReturnCorrectAnswerIfValueIsInt() {
+        assertThatJson(UserProfilePropertyValue.valueOf(1).IsInt()).isEqualTo(true);
+        assertThatJson(UserProfilePropertyValue.valueOf("1").IsInt()).isEqualTo(false);
+    }
+
+    @Test
+    void serialization_ReturnCorrectAnswerIfValueIsArrayList() {
+        assertThatJson(UserProfilePropertyValue.valueOf(new ArrayList<String>()).IsArrayList()).isEqualTo(true);
+        assertThatJson(UserProfilePropertyValue.valueOf("1").IsArrayList()).isEqualTo(false);
     }
 }
